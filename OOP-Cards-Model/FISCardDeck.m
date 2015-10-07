@@ -25,7 +25,6 @@
 }
 
 -(void)generateCards{
-
     
     FISCard * cardSet = [[FISCard alloc] init];
     
@@ -41,26 +40,6 @@
     }
 }
 
-/*
- 
-It should return a card at one end of the array (it is up to you to choose between making this either the first object or the last object in the array). However, this method should also remove that card from the remainingCards array, 
- and also add it to the dealtCards array. 
- This way, our instance of FISCardDeck will always keep track of all fifty-two cards, even after drawing them.
- You'll notice that there's a test which attempts to draw a fifty-third card from our fifty-two card deck. 
- Add a protection against this behavior at the beginning of the drawNextCard method to 
- return nil if there are no cards in the remainingCards array.
- 
- Write the implementation for the resetDeck method 
- to call the gatherDealtCards method and then 
- the shuffleRemainingCards method. That's it,
- however the tests for resetDeck will fail until those other method implementations are completed.
- 
- Write the implementation for the gatherDealtCards method. 
- It should add the cards in the dealtCards array 
- back into the remainingCards array 
- and leave the dealtCards array empty.
- 
- */
 
 -(FISCard *)drawNextCard{
     
@@ -81,40 +60,56 @@ It should return a card at one end of the array (it is up to you to choose betwe
 
 -(void)resetDeck{
     
+    
     [self gatherDealtCards];
     [self shuffleRemainingCards];
     
 }
+
 -(void)gatherDealtCards{
     
-   // [self.remainingCards addObject:self.dealtCards];
-   // [self.dealtCards removeAllObjects];
-    
+    if (self.dealtCards) {
+        
+    [self.remainingCards addObjectsFromArray:self.dealtCards]; // add each element in the array
+    [self.dealtCards removeAllObjects];
+        
+    }
 }
 
-/*
- 
- randomly draw a card out of the copied mutable array and 
- insert it into the remainingCards array 
- (make sure to remove it from the copied array).
- */
+
 -(void)shuffleRemainingCards{
     
     NSMutableArray * cardMemory = [self.remainingCards mutableCopy];
     [self.remainingCards removeAllObjects];
     
+    NSUInteger countOfCardMemory = cardMemory.count;
+    
     if (cardMemory.count == 52) {
 
-        for (NSUInteger i = 0 ; i < 52 ; i ++ ) {
+        for (NSUInteger i = 0 ; i < countOfCardMemory ; i ++ ) {
             
-            NSUInteger random = arc4random_uniform(52);
-            FISCard * randomCard = [cardMemory objectAtIndex:random];
+            NSUInteger countOfCardMemory = cardMemory.count;
+            NSUInteger random = arc4random_uniform((unsigned int)countOfCardMemory);
+            
+            FISCard *randomCard = [cardMemory objectAtIndex:random];
+            
             [self.remainingCards addObject:randomCard];
             [cardMemory removeObjectAtIndex:random];
         }
-        
     }
 }
 
+
+-(NSString *)description{
+   
+    NSMutableString * count = [[@(self.remainingCards.count) stringValue] mutableCopy];
+    NSMutableString * formatCount = [NSMutableString stringWithFormat:@"count : %@\ncards : \n",count];
+
+    for (FISCard * card in self.remainingCards) {
+        [formatCount appendString:[NSString stringWithFormat:@" %@",card.description]];
+    }
+    
+    return formatCount;
+}
 
 @end
